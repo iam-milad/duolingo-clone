@@ -1,36 +1,36 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const SOCIAL_BUTTONS = [
-  { icon: "logo-google" as const, color: "#4285F4", label: "Continue with Google" },
-  { icon: "logo-facebook" as const, color: "#1877F2", label: "Continue with Facebook" },
-  { icon: "logo-apple" as const, color: "#000000", label: "Continue with Apple" },
+import type { OAuthProvider } from "@/hooks/useOAuthProviders";
+
+type Props = {
+  onPress: (provider: OAuthProvider) => void;
+};
+
+const SOCIAL_BUTTONS: { provider: OAuthProvider; icon: "logo-google" | "logo-facebook" | "logo-apple"; color: string; label: string }[] = [
+  { provider: "google", icon: "logo-google", color: "#4285F4", label: "Continue with Google" },
+  { provider: "facebook", icon: "logo-facebook", color: "#1877F2", label: "Continue with Facebook" },
+  { provider: "apple", icon: "logo-apple", color: "#000000", label: "Continue with Apple" },
 ];
 
-export function SocialAuthButtons() {
+export function SocialAuthButtons({ onPress }: Props) {
   return (
     <View className="gap-3">
-      {SOCIAL_BUTTONS.map(({ icon, color, label }) => (
-        <SocialButton
-          key={label}
-          icon={<Ionicons name={icon} size={22} color={color} />}
-          label={label}
-        />
+      {SOCIAL_BUTTONS.map(({ provider, icon, color, label }) => (
+        <TouchableOpacity
+          key={provider}
+          style={styles.shadow}
+          className="flex-row items-center px-5 py-3.5 rounded-xl border border-border bg-background gap-3"
+          activeOpacity={0.8}
+          onPress={() => onPress(provider)}
+        >
+          <View className="w-7 h-7 items-center justify-center">
+            <Ionicons name={icon} size={22} color={color} />
+          </View>
+          <Text className="body-md text-text-primary">{label}</Text>
+        </TouchableOpacity>
       ))}
     </View>
-  );
-}
-
-function SocialButton({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <TouchableOpacity
-      style={styles.shadow}
-      className="flex-row items-center px-5 py-3.5 rounded-xl border border-border bg-background gap-3"
-      activeOpacity={0.8}
-    >
-      <View className="w-7 h-7 items-center justify-center">{icon}</View>
-      <Text className="body-md text-text-primary">{label}</Text>
-    </TouchableOpacity>
   );
 }
 
