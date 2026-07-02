@@ -15,9 +15,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { LANGUAGES } from "@/data/languages";
 import { images } from "@/constants/images";
 import { Language } from "@/types/learning";
+import { useLanguageStore } from "@/store/languageStore";
 
 export default function LanguageSelection() {
   const router = useRouter();
+  const { setSelectedLanguage } = useLanguageStore();
   const [selected, setSelected] = useState<Language | null>(null);
   const [search, setSearch] = useState("");
 
@@ -111,7 +113,10 @@ export default function LanguageSelection() {
         <View className="px-5 pb-4">
           <TouchableOpacity
             onPress={() => {
-              if (selected) router.back();
+              if (selected) {
+                setSelectedLanguage(selected);
+                router.replace("/");
+              }
             }}
             activeOpacity={selected ? 0.8 : 1}
             className={`h-14 rounded-2xl items-center justify-center ${
