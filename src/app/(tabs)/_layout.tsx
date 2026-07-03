@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, type ComponentProps } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,13 +9,13 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+type BottomTabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
 const CIRCLE_SIZE = 52;
 const TAB_BAR_HEIGHT = 64;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+type IoniconsName = ComponentProps<typeof Ionicons>['name'];
 
 const TABS: Array<{
   name: string;
