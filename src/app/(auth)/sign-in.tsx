@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 
 import { images } from "@/constants/images";
 import { colors } from "@/constants/theme/colors";
@@ -23,6 +24,7 @@ import { useOAuthProviders } from "@/hooks/useOAuthProviders";
 
 export default function SignIn() {
   const router = useRouter();
+  const posthog = usePostHog();
   const { signIn, fetchStatus } = useSignIn();
   const { signInWithOAuth } = useOAuthProviders();
 
@@ -34,6 +36,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     setLoading(true);
     setError(null);
+    posthog.capture('sign_in_initiated');
 
     const { error: createError } = await signIn.create({ identifier: email });
     if (createError) {
@@ -67,6 +70,8 @@ export default function SignIn() {
     if (finalizeError) {
       throw new Error(finalizeError.longMessage || finalizeError.message || "Sign in failed.");
     }
+
+    posthog.capture('sign_in_completed');
   };
 
   const handleResend = async () => {
@@ -160,7 +165,7 @@ export default function SignIn() {
           {/* Sign Up Link */}
           <View className="flex-row justify-center mt-8 mb-2">
             <Text className="body-md text-text-secondary">
-              Don't have an account?{" "}
+              {"Don't have an account? "}
             </Text>
             <TouchableOpacity onPress={() => router.replace("/(auth)/sign-up")}>
               <Text className="body-md text-lingua-purple">Sign up</Text>

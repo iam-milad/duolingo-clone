@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { usePostHog } from "posthog-react-native";
 
 import { LANGUAGES } from "@/data/languages";
 import { images } from "@/constants/images";
@@ -19,9 +20,11 @@ import { useLanguageStore } from "@/store/languageStore";
 
 export default function LanguageSelection() {
   const router = useRouter();
+  const posthog = usePostHog();
   const { setSelectedLanguage } = useLanguageStore();
   const [selected, setSelected] = useState<Language | null>(null);
   const [search, setSearch] = useState("");
+  const searchFired = useRef(false);
 
   const filtered = LANGUAGES.filter((lang) =>
     lang.name.toLowerCase().includes(search.toLowerCase())
@@ -47,7 +50,13 @@ export default function LanguageSelection() {
           <Ionicons name="search" size={18} color="#6b7280" />
           <TextInput
             value={search}
-            onChangeText={setSearch}
+            onChangeText={(v) => {
+              setSearch(v);
+              if (v.length > 0 && !searchFired.current) {
+                searchFired.current = true;
+                posthog.capture('language_search_performed');
+              }
+            }}
             placeholder="Search languages"
             placeholderTextColor="#6b7280"
             className="flex-1 body-md text-text-primary"
@@ -114,6 +123,10 @@ export default function LanguageSelection() {
           <TouchableOpacity
             onPress={() => {
               if (selected) {
+                posthog.capture('language_selected', {
+                  language_code: selected.code,
+                  language_name: selected.name,
+                });
                 setSelectedLanguage(selected);
                 router.replace("/");
               }
