@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 
 import { images } from "@/constants/images";
 import { colors } from "@/constants/theme/colors";
@@ -23,6 +24,7 @@ import { useOAuthProviders } from "@/hooks/useOAuthProviders";
 
 export default function SignUp() {
   const router = useRouter();
+  const posthog = usePostHog();
   const { signUp, fetchStatus } = useSignUp();
   const { signInWithOAuth } = useOAuthProviders();
 
@@ -36,6 +38,7 @@ export default function SignUp() {
   const handleSignUp = async () => {
     setLoading(true);
     setError(null);
+    posthog.capture('sign_up_initiated');
 
     const { error: passwordError } = await signUp.password({ emailAddress: email, password });
     if (passwordError) {
@@ -68,6 +71,8 @@ export default function SignUp() {
     if (finalizeError) {
       throw new Error(finalizeError.longMessage || finalizeError.message || "Sign up failed.");
     }
+
+    posthog.capture('sign_up_completed');
   };
 
   const handleResend = async () => {

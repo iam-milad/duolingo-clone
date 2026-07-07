@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
+import { usePostHog } from "posthog-react-native";
 
 import { useLanguageStore } from "@/store/languageStore";
 import { useProgressStore } from "@/store/progressStore";
@@ -37,6 +38,7 @@ type PlanItem = {
 
 export default function HomeScreen() {
   const { user } = useUser();
+  const posthog = usePostHog();
   const { selectedLanguage, _hasHydrated: languageHydrated } = useLanguageStore();
   const { xp, dailyGoal, streak, completedLessonIds, _hasHydrated: progressHydrated } = useProgressStore();
 
@@ -179,6 +181,12 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     className="self-start bg-white rounded-full px-[22px] py-[9px]"
                     activeOpacity={0.85}
+                    onPress={() =>
+                      posthog.capture('continue_learning_tapped', {
+                        language_code: selectedLanguage?.code,
+                        language_name: selectedLanguage?.name,
+                      })
+                    }
                   >
                     <Text className="font-poppins-semibold text-sm text-[#5235D5]">
                       Continue
@@ -213,6 +221,16 @@ export default function HomeScreen() {
         >
           {todaysPlan.map((item, index) => (
             <View key={item.id}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() =>
+                  posthog.capture('daily_plan_item_tapped', {
+                    item_id: item.id,
+                    item_title: item.title,
+                    completed: item.completed,
+                  })
+                }
+              >
               <View className="flex-row items-center px-3 py-3.5 gap-3">
                 {/* backgroundColor is runtime-computed — inline style required */}
                 <View
@@ -237,6 +255,7 @@ export default function HomeScreen() {
                   <View className="w-7 h-7 rounded-full border-2 border-border" />
                 )}
               </View>
+              </TouchableOpacity>
               {index < todaysPlan.length - 1 && (
                 <View className="h-px bg-[#F3F4F6] ml-[68px] mr-3" />
               )}
