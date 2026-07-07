@@ -7,7 +7,7 @@ export const UNITS: Unit[] = [
     title: 'Greetings & Basics',
     description: 'Start your Spanish journey with everyday phrases',
     order: 1,
-    lessonIds: ['es-lesson-1', 'es-lesson-2', 'es-lesson-3'],
+    lessonIds: ['es-lesson-1', 'es-lesson-2', 'es-lesson-3', 'es-lesson-4', 'es-lesson-5', 'es-lesson-6'],
   },
   {
     id: 'fr-unit-1',
