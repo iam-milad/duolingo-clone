@@ -37,8 +37,12 @@ type PlanItem = {
 
 export default function HomeScreen() {
   const { user } = useUser();
-  const { selectedLanguage } = useLanguageStore();
-  const { xp, dailyGoal, streak, completedLessonIds } = useProgressStore();
+  const { selectedLanguage, _hasHydrated: languageHydrated } = useLanguageStore();
+  const { xp, dailyGoal, streak, completedLessonIds, _hasHydrated: progressHydrated } = useProgressStore();
+
+  if (!languageHydrated || !progressHydrated) {
+    return <View style={styles.safe} />;
+  }
 
   const firstName = user?.firstName ?? "Friend";
   const greeting = selectedLanguage

@@ -16,9 +16,9 @@ interface ProgressState {
 export const useProgressStore = create<ProgressState>()(
   persist(
     (set) => ({
-      xp: 15,
+      xp: 0,
       dailyGoal: 20,
-      streak: 12,
+      streak: 0,
       completedLessonIds: [],
       _hasHydrated: false,
       addXp: (amount) =>
