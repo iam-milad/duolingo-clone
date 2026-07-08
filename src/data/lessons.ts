@@ -180,6 +180,169 @@ export const LESSONS: Lesson[] = [
     },
   },
 
+  {
+    id: 'es-lesson-4',
+    unitId: 'es-unit-1',
+    title: 'Colors',
+    description: 'Learn basic colors in Spanish',
+    icon: '🎨',
+    xpReward: 10,
+    goals: [
+      { description: 'Learn 6 colors in Spanish', xpReward: 6 },
+      { description: 'Complete all activities', xpReward: 4 },
+    ],
+    vocabulary: [
+      { word: 'Rojo', translation: 'Red', pronunciation: 'ROH-hoh', emoji: '🔴' },
+      { word: 'Azul', translation: 'Blue', pronunciation: 'ah-SOOL', emoji: '🔵' },
+      { word: 'Verde', translation: 'Green', pronunciation: 'BEHR-deh', emoji: '🟢' },
+      { word: 'Amarillo', translation: 'Yellow', pronunciation: 'ah-mah-REE-yoh', emoji: '🟡' },
+      { word: 'Negro', translation: 'Black', pronunciation: 'NEH-groh', emoji: '⚫' },
+      { word: 'Blanco', translation: 'White', pronunciation: 'BLAHN-koh', emoji: '⚪' },
+    ],
+    phrases: [
+      { text: '¿De qué color es?', translation: 'What color is it?', pronunciation: 'deh keh koh-LOHR ehs' },
+      { text: 'Es rojo.', translation: 'It is red.', pronunciation: 'ehs ROH-hoh' },
+    ],
+    activities: [
+      {
+        id: 'es-lesson-4-act-1',
+        type: 'multiple-choice',
+        question: 'What does "azul" mean?',
+        correctAnswer: 'Blue',
+        options: ['Red', 'Blue', 'Green', 'Yellow'],
+      },
+      {
+        id: 'es-lesson-4-act-2',
+        type: 'multiple-choice',
+        question: 'How do you say "green" in Spanish?',
+        correctAnswer: 'Verde',
+        options: ['Rojo', 'Azul', 'Verde', 'Amarillo'],
+      },
+      {
+        id: 'es-lesson-4-act-3',
+        type: 'translate',
+        question: 'Translate: "Black"',
+        correctAnswer: 'Negro',
+        hint: 'Think of "film negro".',
+      },
+    ],
+    aiTeacherPrompt: {
+      systemPrompt:
+        "You're Luna, a creative Spanish teacher in a real back-and-forth voice lesson about colors in Spanish. This is INTERACTIVE — not a lecture. Introduce ONE color at a time: say it, give the translation and pronunciation tip, then END YOUR TURN and wait for the student. Your turn ENDS at the question mark — stop there and output nothing else. Keep every reply to one or two sentences. Stay strictly within: rojo, azul, verde, amarillo, negro, blanco, ¿De qué color es? and Es rojo.",
+      introMessage:
+        "¡Hola! Today we're painting with words — we're learning colors in Spanish and it's one of my favorites!",
+      topics: ['colors', 'adjectives', 'descriptions'],
+    },
+  },
+
+  {
+    id: 'es-lesson-5',
+    unitId: 'es-unit-1',
+    title: 'At the Restaurant',
+    description: 'Order food and drinks in Spanish',
+    icon: '🍽️',
+    xpReward: 15,
+    goals: [
+      { description: 'Learn restaurant vocabulary in Spanish', xpReward: 8 },
+      { description: 'Practice ordering in Spanish', xpReward: 7 },
+    ],
+    vocabulary: [
+      { word: 'Un café', translation: 'A coffee', pronunciation: 'oon kah-FEH', emoji: '☕' },
+      { word: 'El agua', translation: 'Water', pronunciation: 'ehl AH-gwah', emoji: '💧' },
+      { word: 'La mesa', translation: 'The table', pronunciation: 'lah MEH-sah', emoji: '🪑' },
+      { word: 'La cuenta', translation: 'The bill', pronunciation: 'lah KWEHN-tah', emoji: '🧾' },
+      { word: 'El menú', translation: 'The menu', pronunciation: 'ehl meh-NOO', emoji: '📋' },
+    ],
+    phrases: [
+      { text: 'Quisiera un café, por favor.', translation: 'I would like a coffee, please.', pronunciation: 'kee-SYEH-rah oon kah-FEH, por fah-BOR' },
+      { text: 'La cuenta, por favor.', translation: 'The bill, please.', pronunciation: 'lah KWEHN-tah, por fah-BOR' },
+    ],
+    activities: [
+      {
+        id: 'es-lesson-5-act-1',
+        type: 'multiple-choice',
+        question: 'How do you say "the bill" in Spanish?',
+        correctAnswer: 'La cuenta',
+        options: ['La mesa', 'El agua', 'La cuenta', 'El menú'],
+      },
+      {
+        id: 'es-lesson-5-act-2',
+        type: 'translate',
+        question: 'Translate: "The bill, please."',
+        correctAnswer: 'La cuenta, por favor.',
+        hint: '"La cuenta" means the bill.',
+      },
+      {
+        id: 'es-lesson-5-act-3',
+        type: 'multiple-choice',
+        question: 'What does "Quisiera" mean?',
+        correctAnswer: 'I would like',
+        options: ['I want', 'I would like', 'Give me', 'Please'],
+      },
+    ],
+    aiTeacherPrompt: {
+      systemPrompt:
+        "You're Luna, a warm Spanish teacher in a real back-and-forth voice lesson set in a Spanish restaurant. This is INTERACTIVE — not a lecture. Introduce ONE phrase or item at a time, then END YOUR TURN and wait for the student. Your turn ENDS at the question mark — stop there and output nothing else. Keep every reply to one or two sentences. Stay strictly within: un café, el agua, la mesa, la cuenta, el menú, Quisiera, and por favor.",
+      introMessage:
+        "¡Hola! Imagine we're sitting at a beautiful Spanish restaurant — today you'll learn how to order like a local!",
+      topics: ['food', 'drinks', 'ordering', 'restaurant phrases'],
+    },
+  },
+
+  {
+    id: 'es-lesson-6',
+    unitId: 'es-unit-1',
+    title: 'Family & Friends',
+    description: 'Talk about your family in Spanish',
+    icon: '👨‍👩‍👧‍👦',
+    xpReward: 10,
+    goals: [
+      { description: 'Learn family vocabulary in Spanish', xpReward: 6 },
+      { description: 'Complete all activities', xpReward: 4 },
+    ],
+    vocabulary: [
+      { word: 'La familia', translation: 'The family', pronunciation: 'lah fah-MEE-lyah', emoji: '👨‍👩‍👧‍👦' },
+      { word: 'La madre', translation: 'Mother', pronunciation: 'lah MAH-dreh', emoji: '👩' },
+      { word: 'El padre', translation: 'Father', pronunciation: 'ehl PAH-dreh', emoji: '👨' },
+      { word: 'El hermano', translation: 'Brother', pronunciation: 'ehl ehr-MAH-noh', emoji: '👦' },
+      { word: 'La hermana', translation: 'Sister', pronunciation: 'lah ehr-MAH-nah', emoji: '👧' },
+    ],
+    phrases: [
+      { text: 'Tengo dos hermanos.', translation: 'I have two brothers.', pronunciation: 'TEHN-goh dohs ehr-MAH-nohs' },
+      { text: '¿Tienes hermanos?', translation: 'Do you have siblings?', pronunciation: 'TYEH-nehs ehr-MAH-nohs' },
+    ],
+    activities: [
+      {
+        id: 'es-lesson-6-act-1',
+        type: 'multiple-choice',
+        question: 'What does "la madre" mean?',
+        correctAnswer: 'Mother',
+        options: ['Father', 'Mother', 'Sister', 'Brother'],
+      },
+      {
+        id: 'es-lesson-6-act-2',
+        type: 'multiple-choice',
+        question: 'How do you say "brother" in Spanish?',
+        correctAnswer: 'El hermano',
+        options: ['La hermana', 'El padre', 'El hermano', 'La madre'],
+      },
+      {
+        id: 'es-lesson-6-act-3',
+        type: 'translate',
+        question: 'Translate: "The family"',
+        correctAnswer: 'La familia',
+        hint: 'Sounds a lot like the English word!',
+      },
+    ],
+    aiTeacherPrompt: {
+      systemPrompt:
+        "You're Luna, a warm Spanish teacher in a real back-and-forth voice lesson about family in Spanish. This is INTERACTIVE — not a lecture. Introduce ONE word at a time: say it, give the translation and pronunciation, then END YOUR TURN and wait for the student. Your turn ENDS at the question mark — stop there and output nothing else. Keep every reply to one or two sentences. Stay strictly within: la familia, la madre, el padre, el hermano, la hermana, Tengo dos hermanos, and ¿Tienes hermanos?",
+      introMessage:
+        "¡Hola! Today we're talking about family — la familia — one of the most important topics in any language!",
+      topics: ['family', 'relationships', 'possessives'],
+    },
+  },
+
   // ─── French ────────────────────────────────────────────────────────────────
 
   {

@@ -85,6 +85,7 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="language-selection" />
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="lesson/[id]" />
         </Stack>
       </ClerkProvider>
     </PostHogProvider>
