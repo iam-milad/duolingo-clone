@@ -67,6 +67,12 @@
       "skillPath": "plugins/expo/skills/native-data-fetching/SKILL.md",
       "computedHash": "21253dd72e2afa0cc0a6693295f043af3b149fa250c7aedef4d33144e69258ff"
     },
+    "stream": {
+      "source": "GetStream/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/stream/SKILL.md",
+      "computedHash": "c77dfb3bc5be5397d378a8d2372ae700f209f5f744be3f387cfe4d4809623636"
+    },
     "upgrading-expo": {
       "source": "expo/skills",
       "sourceType": "github",
