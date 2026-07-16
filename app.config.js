@@ -4,24 +4,33 @@ export default {
     slug: 'duolingo-clone',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
+    icon: './assetss/images/icon.png',
     scheme: 'duolingoclone',
     userInterfaceStyle: 'automatic',
     ios: {
-      icon: './assets/expo.icon',
+      bundleIdentifier: 'com.anonymous.duolingo-clone',
+      infoPlist: {
+        NSMicrophoneUsageDescription: 'This app uses the microphone for interactive audio lessons.',
+      },
     },
     android: {
+      package: 'com.anonymous.duolingoclone',
       adaptiveIcon: {
         backgroundColor: '#E6F4FE',
-        foregroundImage: './assets/images/android-icon-foreground.png',
-        backgroundImage: './assets/images/android-icon-background.png',
-        monochromeImage: './assets/images/android-icon-monochrome.png',
+        foregroundImage: './assetss/images/android-icon-foreground.png',
+        backgroundImage: './assetss/images/android-icon-background.png',
+        monochromeImage: './assetss/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
+      permissions: [
+        'android.permission.RECORD_AUDIO',
+        'android.permission.BLUETOOTH',
+        'android.permission.BLUETOOTH_CONNECT',
+      ],
     },
     web: {
       output: 'static',
-      favicon: './assets/images/favicon.png',
+      favicon: './assetss/images/favicon.png',
     },
     plugins: [
       'expo-router',
@@ -38,6 +47,8 @@ export default {
       '@clerk/expo',
       'expo-secure-store',
       'expo-web-browser',
+      '@stream-io/video-react-native-sdk',
+      '@config-plugins/react-native-webrtc',
     ],
     experiments: {
       typedRoutes: true,
