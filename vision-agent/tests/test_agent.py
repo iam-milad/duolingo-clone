@@ -9,7 +9,7 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from agent import INSTRUCTIONS
+from agent import BASE_INSTRUCTIONS as INSTRUCTIONS
 
 from vision_agents.plugins import gemini
 from vision_agents.testing import LLMJudge, TestSession

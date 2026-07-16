@@ -20,7 +20,7 @@ import { useStreamCall } from '@/hooks/useStreamCall';
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { selectedLanguage } = useLanguageStore();
 
   const lesson = LESSONS.find((l) => l.id === id);
@@ -31,6 +31,7 @@ export default function LessonScreen() {
     userImageUrl: user?.imageUrl ?? undefined,
     lessonId: id ?? 'unknown',
     languageCode: selectedLanguage?.code ?? 'en',
+    enabled: isLoaded && !!user && !!lesson,
   });
 
   const handleEndCall = async () => {
@@ -218,10 +219,10 @@ export default function LessonScreen() {
 
         {/* Subtitles */}
         <View style={styles.controlItem}>
-          <View style={[styles.controlBtn, styles.controlBtnActive]}>
-            <Ionicons name="text" size={22} color="#6C4EF5" />
+          <View style={[styles.controlBtn, styles.controlBtnDisabled]}>
+            <Ionicons name="text" size={22} color="#C4C9D4" />
           </View>
-          <Text style={styles.controlLabel}>Subtitles</Text>
+          <Text style={[styles.controlLabel, styles.controlLabelDisabled]}>Subtitles</Text>
         </View>
 
         {/* End Call */}

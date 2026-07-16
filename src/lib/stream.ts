@@ -5,5 +5,7 @@ export function getApiBaseUrl(): string {
     const hostUri = Constants.expoConfig?.hostUri;
     if (hostUri) return `http://${hostUri}`;
   }
-  return process.env.EXPO_PUBLIC_API_URL ?? '';
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (!apiUrl) throw new Error('EXPO_PUBLIC_API_URL is not configured');
+  return apiUrl;
 }

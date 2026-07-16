@@ -1,7 +1,11 @@
+import logging
+
 from dotenv import load_dotenv
 from vision_agents.core import Agent, Runner, User
 from vision_agents.core.agents import AgentLauncher
 from vision_agents.plugins import getstream, openai as va_openai
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -119,8 +123,14 @@ async def join_call(agent: Agent, call_type: str, call_id: str, **kwargs) -> Non
     if hasattr(call, "go_live"):
         try:
             await call.go_live()
-        except Exception:
-            pass  # Not all call types require go_live; ignore errors.
+        except Exception as exc:
+            msg = str(exc).lower()
+            if "unsupported" in msg and "call" in msg:
+                # Expected: this call type does not require go_live.
+                logger.debug("go_live skipped for call type %r: %s", call_type, exc)
+            else:
+                logger.error("go_live failed for call %r: %s", call_id, exc)
+                raise
 
     async with agent.join(call):
         await agent.simple_response(_build_intro_prompt(custom, language))

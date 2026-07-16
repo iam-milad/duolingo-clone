@@ -39,7 +39,7 @@ export default {
         {
           backgroundColor: '#208AEF',
           android: {
-            image: './assetss/images/splash-icon.png',
+            image: './assets/images/splash-icon.png',
             imageWidth: 76,
           },
         },

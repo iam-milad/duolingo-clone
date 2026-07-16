@@ -60,26 +60,22 @@ export async function POST(request: Request): Promise<Response> {
       }
     : { languageCode: code, languageName };
 
-  try {
-    const call = client.video.call('default', callId);
-    await call.getOrCreate({
-      data: {
-        created_by_id: userId,
-        // Give the agent admin role so it can publish audio immediately
-        members: [
-          { user_id: userId, role: 'call_member' },
-          { user_id: 'lingua-teacher', role: 'admin' },
-        ],
-        custom: lessonContext,
-        settings_override: {
-          audio: { mic_default_on: true, default_device: 'speaker' },
-          video: { camera_default_on: false },
-        },
+  const call = client.video.call('default', callId);
+  await call.getOrCreate({
+    data: {
+      created_by_id: userId,
+      // Give the agent admin role so it can publish audio immediately
+      members: [
+        { user_id: userId, role: 'call_member' },
+        { user_id: 'lingua-teacher', role: 'admin' },
+      ],
+      custom: lessonContext,
+      settings_override: {
+        audio: { mic_default_on: true, default_device: 'speaker' },
+        video: { camera_default_on: false },
       },
-    });
-  } catch {
-    // Call may already exist — proceed with the token
-  }
+    },
+  });
 
   return Response.json({ token, callId });
 }

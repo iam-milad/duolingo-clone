@@ -12,6 +12,7 @@ interface UseStreamCallOptions {
   userImageUrl?: string;
   lessonId: string;
   languageCode: string;
+  enabled?: boolean;
 }
 
 interface UseStreamCallResult {
@@ -32,6 +33,7 @@ export function useStreamCall({
   userImageUrl,
   lessonId,
   languageCode,
+  enabled = true,
 }: UseStreamCallOptions): UseStreamCallResult {
   const [callStatus, setCallStatus] = useState<CallStatus>('connecting');
   const [agentStatus, setAgentStatus] = useState<AgentStatus>('idle');
@@ -81,6 +83,8 @@ export function useStreamCall({
   }, [stopAgent]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
 
     const joinCall = async () => {
@@ -132,12 +136,15 @@ export function useStreamCall({
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ callId, callType: 'default' }),
           });
-          if (cancelled) return;
           if (agentRes.ok) {
+            // Retain session_id before checking cancelled so cleanup() can
+            // stop a session that was created just as the component unmounted.
             const { session_id } = await agentRes.json() as { session_id: string };
             sessionIdRef.current = session_id;
+            if (cancelled) return;
             setAgentStatus('connected');
           } else {
+            if (cancelled) return;
             setAgentStatus('failed');
           }
         } catch {
@@ -145,6 +152,7 @@ export function useStreamCall({
         }
       } catch (err) {
         if (cancelled) return;
+        await cleanup();
         const msg = err instanceof Error ? err.message : 'Failed to join the audio session.';
         setErrorMessage(msg);
         setCallStatus('error');
@@ -157,9 +165,9 @@ export function useStreamCall({
       cancelled = true;
       cleanup();
     };
-    // retryKey triggers a fresh join attempt
+    // retryKey triggers a fresh join attempt; enabled gates the initial join
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retryKey]);
+  }, [retryKey, enabled]);
 
   const toggleMute = useCallback(async () => {
     if (!callRef.current) return;
