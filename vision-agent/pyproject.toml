@@ -1,0 +1,32 @@
+[project]
+name = "vision-agent"
+version = "0.0.0"
+requires-python = ">=3.10,<3.14"
+
+dependencies = [
+  "python-dotenv>=1.2.2",
+  "vision-agents",
+  "vision-agents-plugins-openai",
+  "vision-agents-plugins-getstream",
+]
+
+[tool.uv]
+# onnxruntime >=1.21 dropped macOS x86_64; 1.20.1 ships universal2 wheels
+override-dependencies = ["onnxruntime<=1.20.1"]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "pytest-asyncio>=1.0",
+]
+
+[tool.vision-agents.agent]
+entrypoint = "agent:runner"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = [
+  "integration: tests that call real model services",
+]

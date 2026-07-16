@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,16 +14,29 @@ import { useUser } from '@clerk/expo';
 
 import { LESSONS } from '@/data/lessons';
 import { images } from '@/constants/images';
+import { useLanguageStore } from '@/store/languageStore';
+import { useStreamCall } from '@/hooks/useStreamCall';
 
 export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { user } = useUser();
-
-  const [isMuted, setIsMuted] = useState(false);
-  const [showSubtitles, setShowSubtitles] = useState(true);
+  const { selectedLanguage } = useLanguageStore();
 
   const lesson = LESSONS.find((l) => l.id === id);
+
+  const { callStatus, agentStatus, isMuted, errorMessage, toggleMute, endCall, retryJoin } = useStreamCall({
+    userId: user?.id ?? 'anonymous',
+    userName: user?.fullName ?? user?.firstName ?? undefined,
+    userImageUrl: user?.imageUrl ?? undefined,
+    lessonId: id ?? 'unknown',
+    languageCode: selectedLanguage?.code ?? 'en',
+  });
+
+  const handleEndCall = async () => {
+    await endCall();
+    router.back();
+  };
 
   if (!lesson) {
     return (
@@ -36,6 +49,36 @@ export default function LessonScreen() {
   }
 
   const introMessage = lesson.aiTeacherPrompt.introMessage;
+  const isConnecting = callStatus === 'connecting';
+  const isJoined = callStatus === 'joined';
+  const isError = callStatus === 'error';
+  const isEnded = callStatus === 'ended';
+
+  const statusLabel = isConnecting
+    ? 'Connecting...'
+    : isError
+    ? 'Connection failed'
+    : isEnded
+    ? 'Session ended'
+    : agentStatus === 'connecting'
+    ? 'Teacher joining...'
+    : agentStatus === 'connected'
+    ? 'In session'
+    : agentStatus === 'failed'
+    ? 'Teacher unavailable'
+    : 'Waiting for teacher...';
+
+  const statusDotColor = isConnecting
+    ? '#FFC800'
+    : isError
+    ? '#E8534E'
+    : isEnded
+    ? '#9CA3AF'
+    : agentStatus === 'connected'
+    ? '#21C16B'
+    : agentStatus === 'failed'
+    ? '#E8534E'
+    : '#FFC800';
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -54,8 +97,8 @@ export default function LessonScreen() {
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>AI Teacher</Text>
           <View style={styles.onlineRow}>
-            <View style={styles.onlineDot} />
-            <Text style={styles.onlineText}>Online</Text>
+            <View style={[styles.onlineDot, { backgroundColor: statusDotColor }]} />
+            <Text style={[styles.onlineText, { color: statusDotColor }]}>{statusLabel}</Text>
           </View>
         </View>
 
@@ -81,6 +124,12 @@ export default function LessonScreen() {
               <Ionicons name="person" size={26} color="#fff" />
             </View>
           )}
+          {/* Muted badge on user preview */}
+          {isMuted && (
+            <View style={styles.mutedBadge}>
+              <Ionicons name="mic-off" size={10} color="#fff" />
+            </View>
+          )}
         </View>
 
         {/* AI Teacher mascot */}
@@ -89,6 +138,35 @@ export default function LessonScreen() {
           style={styles.mascot}
           resizeMode="contain"
         />
+
+        {/* Connecting overlay */}
+        {isConnecting && (
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#6C4EF5" />
+            <Text style={styles.overlayText}>Connecting to your lesson…</Text>
+          </View>
+        )}
+
+        {/* Error overlay */}
+        {isError && (
+          <View style={styles.overlay}>
+            <Ionicons name="wifi-outline" size={40} color="#E8534E" />
+            <Text style={styles.overlayErrorText}>
+              {errorMessage ?? 'Something went wrong.'}
+            </Text>
+            <TouchableOpacity style={styles.retryBtn} onPress={retryJoin} activeOpacity={0.8}>
+              <Text style={styles.retryBtnText}>Try Again</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Ended overlay */}
+        {isEnded && (
+          <View style={styles.overlay}>
+            <Ionicons name="checkmark-circle-outline" size={44} color="#21C16B" />
+            <Text style={styles.overlayText}>Session complete!</Text>
+          </View>
+        )}
       </View>
 
       {/* ── Speech Bubble ────────────────────────── */}
@@ -110,51 +188,55 @@ export default function LessonScreen() {
           <View style={[styles.controlBtn, styles.controlBtnDisabled]}>
             <Ionicons name="videocam-outline" size={22} color="#C4C9D4" />
           </View>
-          <Text style={[styles.controlLabel, styles.controlLabelDisabled]}>
-            Camera
-          </Text>
+          <Text style={[styles.controlLabel, styles.controlLabelDisabled]}>Camera</Text>
         </View>
 
         {/* Mic */}
         <TouchableOpacity
           style={styles.controlItem}
-          onPress={() => setIsMuted((prev) => !prev)}
+          onPress={toggleMute}
           activeOpacity={0.8}
+          disabled={!isJoined}
         >
-          <View style={[styles.controlBtn, isMuted && styles.controlBtnActive]}>
+          <View
+            style={[
+              styles.controlBtn,
+              isMuted && styles.controlBtnMuted,
+              !isJoined && styles.controlBtnDisabled,
+            ]}
+          >
             <Ionicons
               name={isMuted ? 'mic-off' : 'mic-outline'}
               size={22}
-              color={isMuted ? '#6C4EF5' : '#0D132B'}
+              color={!isJoined ? '#C4C9D4' : isMuted ? '#E8534E' : '#0D132B'}
             />
           </View>
-          <Text style={styles.controlLabel}>Mic</Text>
+          <Text style={[styles.controlLabel, !isJoined && styles.controlLabelDisabled]}>
+            {isMuted ? 'Unmute' : 'Mic'}
+          </Text>
         </TouchableOpacity>
 
         {/* Subtitles */}
-        <TouchableOpacity
-          style={styles.controlItem}
-          onPress={() => setShowSubtitles((prev) => !prev)}
-          activeOpacity={0.8}
-        >
-          <View style={[styles.controlBtn, showSubtitles && styles.controlBtnActive]}>
-            <Ionicons
-              name="text"
-              size={22}
-              color={showSubtitles ? '#6C4EF5' : '#0D132B'}
-            />
+        <View style={styles.controlItem}>
+          <View style={[styles.controlBtn, styles.controlBtnActive]}>
+            <Ionicons name="text" size={22} color="#6C4EF5" />
           </View>
           <Text style={styles.controlLabel}>Subtitles</Text>
-        </TouchableOpacity>
+        </View>
 
         {/* End Call */}
         <TouchableOpacity
           style={styles.controlItem}
-          onPress={() => router.back()}
+          onPress={handleEndCall}
           activeOpacity={0.8}
         >
           <View style={styles.endCallBtn}>
-            <Ionicons name="call" size={24} color="#fff" style={{ transform: [{ rotate: '135deg' }] }} />
+            <Ionicons
+              name="call"
+              size={24}
+              color="#fff"
+              style={{ transform: [{ rotate: '135deg' }] }}
+            />
           </View>
           <Text style={[styles.controlLabel, styles.endCallLabel]}>End Call</Text>
         </TouchableOpacity>
@@ -282,9 +364,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  mutedBadge: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#E8534E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 11,
+  },
   mascot: {
     width: '78%',
     height: '92%',
+  },
+
+  // ── Connecting / Error / Ended overlays
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(240, 237, 255, 0.88)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
+    zIndex: 20,
+    borderRadius: 24,
+  },
+  overlayText: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 15,
+    color: '#0D132B',
+    textAlign: 'center',
+    paddingHorizontal: 24,
+  },
+  overlayErrorText: {
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    color: '#E8534E',
+    textAlign: 'center',
+    paddingHorizontal: 24,
+  },
+  retryBtn: {
+    paddingHorizontal: 28,
+    paddingVertical: 10,
+    backgroundColor: '#6C4EF5',
+    borderRadius: 20,
+  },
+  retryBtnText: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
+    color: '#FFFFFF',
   },
 
   // ── Speech Bubble
@@ -320,7 +450,7 @@ const styles = StyleSheet.create({
     padding: 2,
   },
 
-  // ── Controls — buttons float freely, no background card
+  // ── Controls
   controls: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -353,6 +483,9 @@ const styles = StyleSheet.create({
   controlBtnActive: {
     backgroundColor: '#EDE8FF',
   },
+  controlBtnMuted: {
+    backgroundColor: '#FFF0F0',
+  },
   endCallBtn: {
     width: 62,
     height: 62,
@@ -379,7 +512,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
   },
 
-  // ── Metrics — standalone white card
+  // ── Metrics
   metrics: {
     flexDirection: 'row',
     alignItems: 'center',
